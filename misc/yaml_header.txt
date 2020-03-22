@@ -1,6 +1,13 @@
 ---
 title: "Emne:"
+subtitle: "Tidsrækkeanalyse"
 author: Kasper Rosenkrands
-date: F20
-output: beamer_presentation
+output: 
+  beamer_presentation:
+    includes:
+      in_header: misc/style.tex
 ---
+
+# Her er et slide
+
+- Her er et **vigtigt** punkt

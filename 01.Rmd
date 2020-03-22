@@ -1,23 +1,13 @@
 ---
 title: "Emne:"
+subtitle: "Tidsrækkeanalyse"
 author: Kasper Rosenkrands
-date: F20
-output: beamer_presentation
-editor_options: 
-  chunk_output_type: console
+output: 
+  beamer_presentation:
+    includes:
+      in_header: misc/style.tex
 ---
 
-# Introduktion
+# Her er et slide
 
-- Her er en introduktion
-
-# Næste emne
-
-- Her står noget meget vigtigt
-
-# R kode
-
-```{r, echo = F}
-plot(cars)
-```
-
+- Her er et **vigtigt** punkt
