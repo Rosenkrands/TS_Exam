@@ -3,4 +3,21 @@ title: "Emne:"
 author: Kasper Rosenkrands
 date: F20
 output: beamer_presentation
+editor_options: 
+  chunk_output_type: console
 ---
+
+# Introduktion
+
+- Her er en introduktion
+
+# Næste emne
+
+- Her står noget meget vigtigt
+
+# R kode
+
+```{r, echo = F}
+plot(cars)
+```
+
