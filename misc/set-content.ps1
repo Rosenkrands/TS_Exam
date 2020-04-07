@@ -1,0 +1,1 @@
+﻿cd 'C:\Users\Kasper\Desktop\github_repos\TS_Exam'

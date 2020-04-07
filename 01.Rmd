@@ -1,8 +1,8 @@
 ---
-title: "Emne:"
-subtitle: "Tidsrækkeanalyse"
-author: Kasper Rosenkrands
-output: 
+title: 'Emne:'
+author: "Kasper Rosenkrands"
+subtitle: Tidsrækkeanalyse
+output:
   beamer_presentation:
     includes:
       in_header: misc/style.tex
@@ -10,4 +10,8 @@ output:
 
 # Her er et slide
 
-- Her er et **vigtigt** punkt
+\begin{align}
+  1+1 &= 2 \\
+  &= 6 - 4
+\end{align}
+
