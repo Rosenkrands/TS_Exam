@@ -1,5 +1,5 @@
 ---
-title: 'Emne:'
+title: '1: ARMA processer'
 author: "Kasper Rosenkrands"
 subtitle: Tidsrækkeanalyse
 output:
@@ -8,10 +8,34 @@ output:
       in_header: misc/style.tex
 ---
 
-# Her er et slide
+# AR proces
+En autoregressiv proces er bestemt udfra dens foregående værdier:
 
-\begin{align}
-  1+1 &= 2 \\
-  &= 6 - 4
-\end{align}
+\begin{definition}[Autoregressiv Model]
+  En AR(p) er på formen
+  $$x_t = \phi_1 x_{t - 1} + \phi_2 x_{t - 2} + \cdots + \phi_p x_{t - p} + w_t,$$
+  hvor $x_t$ er stationær, $w_t \sim wn(0, \sigma^2)$, $\phi_1, \phi_2, \ldots, \phi_p$ er konstanter og $\phi_p \neq 0$.
+\end{definition}
+
+# Eksempel på AR proces
+Betragt AR(1) modellen givet ved
+$$x_t = 0.5 x_{t-1} + w_t$$.
+
+```{r, size=2}
+set.seed(123)
+theta <- 0.5; n <- 50
+w <- rnorm(n);x <- rep(NA,n)
+
+x[1] <- w[1]
+for (i in 1:(n-1)) {x[i+1] <- 0.5*x[i] + w[i+1]}
+```
+
+# Eksempel på AR proces
+
+```{r AR-plot, echo=F, fig.height=4, fig.width=6}
+plot.ts(x)
+```
+$$x_t = 0.5 x_{t-1} + w_t$$
+
+# MA proces
 
