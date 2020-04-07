@@ -1,13 +1,35 @@
 ---
-title: "Emne:"
+title: '2: Autokorrelationsfunktioner'
 author: Kasper Rosenkrands
-date: F20
+subtitle: Tidsrækkeanalyse
 output: 
   beamer_presentation:
     includes:
       in_header: misc/style.tex
 ---
 
-# Her er et slide
+# Stationaritet
+Der skelnes mellem to typer stationaritet
 
-- Her er et **vigtigt** punkt
+- \emph{streng stationaritet}
+- \emph{svag stationaritet}
+
+\emph{Streng stationaritet} er ensbetydende med at den \emph{simultane fordelingsfunktion}
+$$P(X_{t_1 + s} \leq x_1, X_{t_2 + s} \leq x_2, \ldots, X_{t_k + s} \leq x_k)$$
+er uændret for $s \in \mathbb{Z}$.
+
+\begin{center}
+  \textbf{I praksis en for stærk antagelse.}
+\end{center}
+
+# Svag stationaritet
+Svag stationaritet eller 2. ordens stationaritet er ensbetydende med at
+$$\mu_t = \mu, \quad \gamma(s,t) = \gamma(s + u, t + u) \quad \forall s,t,u \in \mathbb{Z}.$$
+Med andre ord er
+
+- middelværdien konstant gennem tiden
+- autokovariansen afhænger kun af $|t - s|$
+$$\gamma(t + h,0) = \gamma(h, 0) \big[:= \gamma(h)\big]$$
+For en Gaussisk process gælder
+$$\text{streng stationartiet} \Leftrightarrow \text{svag stationaritet},$$
+da en Gaussisk proces er entydigt bestemt ved dens 1. og 2. moment.
