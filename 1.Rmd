@@ -8,6 +8,13 @@ output:
       in_header: misc/style.tex
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,
+                      message=FALSE, warning=FALSE,
+                      fig.path='figs/',
+                      cache.path = '_cache/')
+```
+
 # AR proces
 En autoregressiv proces er bestemt udfra dens foregående værdier:
 
@@ -17,17 +24,18 @@ En autoregressiv proces er bestemt udfra dens foregående værdier:
   hvor $x_t$ er stationær, $w_t \sim wn(0, \sigma^2)$, $\phi_1, \phi_2, \ldots, \phi_p$ er konstanter og $\phi_p \neq 0$.
 \end{definition}
 
+<!---
 # Eksempel på AR proces
 Betragt AR(1) modellen givet ved
 $$x_t = 0.5 x_{t-1} + w_t$$.
 
 ```{r, size=2}
 set.seed(123)
-theta <- 0.5; n <- 50
+phi <- 0.5; n <- 50
 w <- rnorm(n);x <- rep(NA,n)
 
 x[1] <- w[1]
-for (i in 1:(n-1)) {x[i+1] <- 0.5*x[i] + w[i+1]}
+for (i in 1:(n-1)) {x[i+1] <- phi*x[i] + w[i+1]}
 ```
 
 # Eksempel på AR proces
@@ -36,6 +44,25 @@ for (i in 1:(n-1)) {x[i+1] <- 0.5*x[i] + w[i+1]}
 plot.ts(x)
 ```
 $$x_t = 0.5 x_{t-1} + w_t$$
+--->
 
 # MA proces
+En moving average proces er som navnet antyder et glidende gennemsnit:
 
+\begin{definition}[Moving Average Model]
+  En MA(q) er på formen
+  $$x_t = w_t + \theta_1 w_{t - 1} + \theta_2 w_{t - 2} + \cdots + \theta_q w_{t - q},$$
+  hvor $w_t \sim wn(0,\sigma^2_w)$ og $\theta$ er et filter.
+\end{definition}
+
+# ARMA Model
+En ARMA model er en mere generel model end de to forrige som tager højde for både AR og MA komponenter:
+\begin{definition}
+  ARMA$(p,q)$, er en stationær tidsrække $X$, som opfylder at
+  \begingroup
+  \small
+  $$
+    X_t =  \phi_1 X_{t-1} + \phi_2 X_{t-2} + \cdots + \phi_p X_{t-p} +  w_t + \theta_1 w_{t-1} + \theta_2 w_{t-2} + \cdots + \theta_qw_{t-q},
+  $$
+  \endgroup
+\end{definition}
