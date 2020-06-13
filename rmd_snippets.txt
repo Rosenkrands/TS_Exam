@@ -1,0 +1,9 @@
+Størrelsen på teksten i en chunk kan ændres med 'size'
+```{r, size = 2}
+
+```
+
+Eksempel på at indsætte figur i bestemt størrelse
+```{r AR-plot, echo=F, fig.height=4, fig.width=6}
+#plot.ts(x)
+```
