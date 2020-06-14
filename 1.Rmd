@@ -22,29 +22,12 @@ En autoregressiv proces er bestemt udfra dens foregående værdier:
   En AR(p) er på formen
   $$x_t = \phi_1 x_{t - 1} + \phi_2 x_{t - 2} + \cdots + \phi_p x_{t - p} + w_t,$$
   hvor $x_t$ er stationær, $w_t \sim wn(0, \sigma^2)$, $\phi_1, \phi_2, \ldots, \phi_p$ er konstanter og $\phi_p \neq 0$.
+  På operatorform kan en AR(p) skrives som
+  \begin{align*}
+      \phi(B)X_t = w_t,
+  \end{align*}
+  hvor $\phi(B) = 1 - \phi_1 B - \phi_2 B^2 - \cdots - \phi_p B^p$
 \end{definition}
-
-<!---
-# Eksempel på AR proces
-Betragt AR(1) modellen givet ved
-$$x_t = 0.5 x_{t-1} + w_t$$.
-
-```{r, size=2}
-set.seed(123)
-phi <- 0.5; n <- 50
-w <- rnorm(n);x <- rep(NA,n)
-
-x[1] <- w[1]
-for (i in 1:(n-1)) {x[i+1] <- phi*x[i] + w[i+1]}
-```
-
-# Eksempel på AR proces
-
-```{r AR-plot, echo=F, fig.height=4, fig.width=6}
-plot.ts(x)
-```
-$$x_t = 0.5 x_{t-1} + w_t$$
---->
 
 # MA proces
 En moving average proces er som navnet antyder et glidende gennemsnit:
@@ -53,16 +36,63 @@ En moving average proces er som navnet antyder et glidende gennemsnit:
   En MA(q) er på formen
   $$x_t = w_t + \theta_1 w_{t - 1} + \theta_2 w_{t - 2} + \cdots + \theta_q w_{t - q},$$
   hvor $w_t \sim wn(0,\sigma^2_w)$ og $\theta$ er et filter.
+  På operatorform kan en MA(q) skrives som
+  \begin{align*}
+      X_t = \theta(B)w_t,
+  \end{align*}
+  hvor $\theta(B)=1 + \theta_1B + \cdots + \theta_qB^q.$
 \end{definition}
 
 # ARMA Model
 En ARMA model er en mere generel model end de to forrige som tager højde for både AR og MA komponenter:
-\begin{definition}
+\begin{definition}[ARMA Model]
   ARMA$(p,q)$, er en stationær tidsrække $X$, som opfylder at
   \begingroup
   \small
   $$
-    X_t =  \phi_1 X_{t-1} + \phi_2 X_{t-2} + \cdots + \phi_p X_{t-p} +  w_t + \theta_1 w_{t-1} + \theta_2 w_{t-2} + \cdots + \theta_qw_{t-q},
+    X_t =  \phi_1 X_{t-1} + \phi_2 X_{t-2} + \cdots + \phi_p X_{t-p} +  w_t + \theta_1 w_{t-1} + \theta_2 w_{t-2} + \cdots + \theta_qw_{t-q}.
   $$
   \endgroup
+  En ARMA(p,q) skrives på operator form som
+  \begin{align*}
+      \phi(B)X_t=\theta(B)w_t.
+  \end{align*}
 \end{definition}
+
+# Kausalitet
+En ARMA(p,q) model siges at være **kausal** hvis $\phi^{-1}(B)$-polynomiet eksisterer, og man kan så skrive processen som
+\begin{align*}
+  \phi^{-1}(B)\phi(B) X_t &= \phi^{-1}(B)\theta(B)w_t \\
+  X_t &= \psi(B)w_t.
+\end{align*}
+Som vi kan se i ligningen ovenfor gælder det for en kausal ARMA(p,q) proces, at den kan opskrives som en sum af hvidstøjsleddene.
+
+# Kausalitets betingelse
+Betingelsen for at en ARMA(p,q) proces er kausal er at alle rødder for polynomiet $\phi(B)$ ligger udenfor enhedscirklen.
+
+# Kausalitet eksempel med AR(1)
+For en AR(1)-model kan det vises ved:
+\begin{align*}
+  x_t &= \phi x_{t-1} + w_t \\
+      &= \phi\left(\phi x_{t-2} + w_{t-1}\right) + w_t \\
+      &= \phi^2x_{t-2} + \phi w_{t-1} + w_t \\
+      &\;\;\vdots \\
+      &= \sum^\infty_{j=0}\phi^jw_{t-j},
+\end{align*}
+Vi observerer at summen vil konvergere hvis og kun hvis $|\phi| < 1$.
+
+# Kausalitet eksempel med AR(1)
+Der gælder følgende om udsagnet at $|\phi| < 1$:
+\begin{align*}
+    |\phi| < 1 \Longleftrightarrow \phi(z) = 0 \text{ for } |z|>1.
+\end{align*}
+I tilfældet hvor $|\phi| > 1$ kan man omskrive processen
+\begin{align*}
+  x_t &= \phi x_t + w_t \\
+  x_{t - 1} &= \frac{1}{\phi} x_t + w_t,
+\end{align*}
+dernæst kan det verificeres at, den entydige stationære løsning er givet ved
+\begin{align*}
+  x_t = - \sum_{j = 1}^\infty \phi^{-j}w_{t + j}.
+\end{align*}
+I ovenstående ligning kan det dog ses at den nuværende værdi $x_t$ kommer til at afhænge af fremtidige værdier.
