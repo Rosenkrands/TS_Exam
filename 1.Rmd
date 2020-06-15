@@ -13,7 +13,36 @@ knitr::opts_chunk$set(cache=TRUE,
                       message=FALSE, warning=FALSE,
                       fig.path='figs/',
                       cache.path = '_cache/')
+library(ggplot2)
+library(dplyr)
+library(forecast)
 ```
+
+# Stationaritet
+Der skelnes mellem to typer stationaritet
+
+- \emph{streng stationaritet}
+- \emph{svag stationaritet}
+
+\emph{Streng stationaritet} er ensbetydende med at den \emph{simultane fordelingsfunktion}
+$$P(X_{t_1 + s} \leq x_1, X_{t_2 + s} \leq x_2, \ldots, X_{t_k + s} \leq x_k)$$
+er uændret for $s \in \mathbb{Z}$.
+
+\begin{center}
+  \textbf{I praksis en for stærk antagelse.}
+\end{center}
+
+# Svag stationaritet
+Svag stationaritet eller 2. ordens stationaritet er ensbetydende med at
+$$\mu_t = \mu, \quad \gamma(s,t) = \gamma(s + u, t + u) \quad \forall s,t,u \in \mathbb{Z}.$$
+Med andre ord er
+
+- middelværdien konstant gennem tiden
+- autokovariansen afhænger kun af $|t - s|$
+$$\gamma(t + h,0) = \gamma(h, 0) \big[:= \gamma(h)\big]$$
+For en Gaussisk process gælder
+$$\text{streng stationartiet} \Leftrightarrow \text{svag stationaritet},$$
+da en Gaussisk proces er entydigt bestemt ved dens 1. og 2. moment.
 
 # AR proces
 En autoregressiv proces er bestemt udfra dens foregående værdier:
@@ -29,6 +58,40 @@ En autoregressiv proces er bestemt udfra dens foregående værdier:
   hvor $\phi(B) = 1 - \phi_1 B - \phi_2 B^2 - \cdots - \phi_p B^p$
 \end{definition}
 
+# Eksempel AR proces
+```{r ar_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('124')
+ar_sim <- arima.sim(n = 50, list(ar = c(0.6, 0.7, -0.6)))
+plot_data <- data.frame(value = ar_sim, time = seq(1, length(ar_sim)))
+ar_plot <- plot_data %>% ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated AR(3) process') +
+  theme_light()
+ar_plot
+```
+
+# Eksempel AR ACF
+
+```{r ar_acf_plot, echo=F, fig.height=4, fig.width=6}
+ar_acf_plot <- plot_data %>% 
+  select(value) %>%
+  ggAcf() +
+  ggtitle('Simulated AR(3) process') +
+  theme_light()
+ar_acf_plot
+```
+
+# Eksempel AR PACF
+
+```{r ar_pacf_plot, echo=F, fig.height=4, fig.width=6}
+ar_pacf_plot <- plot_data %>% 
+  select(value) %>%
+  ggPacf() +
+  ggtitle('Simulated AR(3) process') +
+  theme_light()
+ar_pacf_plot
+```
+
 # MA proces
 En moving average proces er som navnet antyder et glidende gennemsnit:
 
@@ -42,6 +105,40 @@ En moving average proces er som navnet antyder et glidende gennemsnit:
   \end{align*}
   hvor $\theta(B)=1 + \theta_1B + \cdots + \theta_qB^q.$
 \end{definition}
+
+# Eksempel MA proces
+```{r ma_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('124')
+ma_sim <- arima.sim(n = 50, list(ma = c(0.5, 0.3, -0.6)))
+plot_data_ma <- data.frame(value = ma_sim, time = seq(1, length(ma_sim)))
+ma_plot <- plot_data_ma %>% ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated MA(3) process') +
+  theme_light()
+ma_plot
+```
+
+# Eksempel MA ACF
+
+```{r ma_acf_plot, echo=F, fig.height=4, fig.width=6}
+ma_acf_plot <- plot_data_ma %>% 
+  select(value) %>%
+  ggAcf() +
+  ggtitle('Simulated MA(3) process') +
+  theme_light()
+ma_acf_plot
+```
+
+# Eksempel MA PACF
+
+```{r ma_pacf_plot, echo=F, fig.height=4, fig.width=6}
+ma_pacf_plot <- plot_data_ma %>% 
+  select(value) %>%
+  ggPacf() +
+  ggtitle('Simulated MA(3) process') +
+  theme_light()
+ma_pacf_plot
+```
 
 # ARMA Model
 En ARMA model er en mere generel model end de to forrige som tager højde for både AR og MA komponenter:
@@ -58,6 +155,47 @@ En ARMA model er en mere generel model end de to forrige som tager højde for b�
       \phi(B)X_t=\theta(B)w_t.
   \end{align*}
 \end{definition}
+
+# Eksempel ARMA proces
+```{r arma_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('124')
+arma_sim <- arima.sim(n = 50, list(ar = c(-0.4, 0.5, 0.3), ma = c(0.4, -0.3, 0.5)))
+plot_data_arma <- data.frame(value = arma_sim, time = seq(1, length(arma_sim)))
+arma_plot <- plot_data_arma %>% ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated ARMA(3,3) process') +
+  theme_light()
+arma_plot
+```
+
+# Eksempel ARMA ACF
+
+```{r arma_acf_plot, echo=F, fig.height=4, fig.width=6}
+arma_acf_plot <- plot_data_arma %>% 
+  select(value) %>%
+  ggAcf() +
+  ggtitle('Simulated ARMA(3,3) process') +
+  theme_light()
+arma_acf_plot
+```
+
+# Eksempel ARMA PACF
+
+```{r arma_pacf_plot, echo=F, fig.height=4, fig.width=6}
+arma_pacf_plot <- plot_data_arma %>% 
+  select(value) %>%
+  ggPacf() +
+  ggtitle('Simulated ARMA(3,3) process') +
+  theme_light()
+arma_pacf_plot
+```
+
+# Egenskaber for ACf og Pacf generelt
+|Model    |Acf                  |Pacf                 |
+|---------|---------------------|---------------------|
+|AR(p)    |Aftager Eksponentielt|Nul for $h > p$      |
+|MA(q)    |Nul for $h > p$      |Aftager Eksponentielt|
+|ARMA(p,q)|Aftager Eksponentielt|Aftager Eksponentielt|
 
 # Kausalitet
 En ARMA(p,q) model siges at være **kausal** hvis $\phi^{-1}(B)$-polynomiet eksisterer, og man kan så skrive processen som
@@ -105,7 +243,7 @@ En ARMA model siges at være **invertibel** hvis $\theta^{-1}(B)$-polynomiet eks
 \end{align*}
 
 # Invertibilitet eksempel med MA(1)
-Betragt den følgende \textbf{MA$(1)$}-model
+Betragt den følgende MA(1)-model
 \begin{align*}
   x_t &= w_t + \theta w_{t-1} \\
   &= (1+\theta B) w_t,
