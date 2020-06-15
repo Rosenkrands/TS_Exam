@@ -96,3 +96,25 @@ dernæst kan det verificeres at, den entydige stationære løsning er givet ved
   x_t = - \sum_{j = 1}^\infty \phi^{-j}w_{t + j}.
 \end{align*}
 I ovenstående ligning kan det dog ses at den nuværende værdi $x_t$ kommer til at afhænge af fremtidige værdier.
+
+# Invertibilitet
+En ARMA model siges at være **invertibel** hvis $\theta^{-1}(B)$-polynomiet eksisterer, og man kan så skrive processen som
+\begin{align*}
+  \theta^{-1}(B)\phi(B)x_t &= \theta^{-1}(B)\theta(B) w_t \\
+  \pi(B) x_t &= w_t.
+\end{align*}
+
+# Invertibilitet eksempel med MA(1)
+Betragt den følgende \textbf{MA$(1)$}-model
+\begin{align*}
+  x_t &= w_t + \theta w_{t-1} \\
+  &= (1+\theta B) w_t,
+\end{align*}
+hvor vi har $|\theta| < 1$, da kan vi gøre følgende\footnote{Geometrisk række: $\sum_{k=0}^\infty a \cdot r^k = \frac{a}{1-r}$}
+\begin{align*}
+        x_t &= (1+\theta B) w_t\\
+        \frac{1}{1+\theta B}x_t &= w_t \\
+        \frac{1}{1- (-\theta) B}x_t &= w_t \\
+        \sum_{j=1}^\infty (-\theta)^j x_{t - j} &= w_t,
+\end{align*}
+og dermed represæntere vores proces som en AR($\infty$).
