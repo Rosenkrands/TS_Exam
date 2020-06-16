@@ -1,5 +1,5 @@
 ---
-title: '2: Autokorrelationsfunktioner'
+title: '2: ARMA og udvidelser til sæsonmodeller'
 author: Kasper Rosenkrands
 subtitle: Tidsrækkeanalyse
 output: 
@@ -7,6 +7,16 @@ output:
     includes:
       in_header: misc/style.tex
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,
+                      message=FALSE, warning=FALSE,
+                      fig.path='figs/',
+                      cache.path = '_cache/')
+library(ggplot2)
+library(dplyr)
+library(forecast)
+```
 
 # Stationaritet
 Der skelnes mellem to typer stationaritet
@@ -33,3 +43,206 @@ $$\gamma(t + h,0) = \gamma(h, 0) \big[:= \gamma(h)\big]$$
 For en Gaussisk process gælder
 $$\text{streng stationartiet} \Leftrightarrow \text{svag stationaritet},$$
 da en Gaussisk proces er entydigt bestemt ved dens 1. og 2. moment.
+
+# ARMA proces
+En ARMA model er en mere generel model end de to forrige som tager højde for både AR og MA komponenter:
+\begin{definition}[ARMA Model]
+  ARMA$(p,q)$, er en stationær tidsrække $X$, som opfylder at
+  \begingroup
+  \small
+  $$
+    X_t =  \phi_1 X_{t-1} + \phi_2 X_{t-2} + \cdots + \phi_p X_{t-p} +  w_t + \theta_1 w_{t-1} + \theta_2 w_{t-2} + \cdots + \theta_qw_{t-q}.
+  $$
+  \endgroup
+  En ARMA(p,q) skrives på operator form som
+  \begin{align*}
+      \phi(B)X_t=\theta(B)w_t.
+  \end{align*}
+\end{definition}
+
+# Eksempel ARMA proces
+```{r arma_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('125')
+arma_sim <- arima.sim(n = 50, list(ar = c(-0.6, 0.5, 0.7), ma = c(0.7, -0.5, 0.8)))
+plot_data_arma <- data.frame(value = arma_sim, time = seq(1, length(arma_sim)))
+arma_plot <- plot_data_arma %>% ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated ARMA(3,3) process') +
+  theme_light()
+arma_plot
+```
+
+# Eksempel ARMA ACF
+
+```{r arma_acf_plot, echo=F, fig.height=4, fig.width=6}
+arma_acf_plot <- plot_data_arma %>% 
+  select(value) %>%
+  ggAcf() +
+  ggtitle('Simulated ARMA(3,3) process') +
+  theme_light()
+arma_acf_plot
+```
+
+# Eksempel ARMA PACF
+
+```{r arma_pacf_plot, echo=F, fig.height=4, fig.width=6}
+arma_pacf_plot <- plot_data_arma %>% 
+  select(value) %>%
+  ggPacf() +
+  ggtitle('Simulated ARMA(3,3) process') +
+  theme_light()
+arma_pacf_plot
+```
+
+# Sæson ARMA
+I praksis ser man ofte data som indeholder sæson komponenter, for at efterkomme dette i en ARMA model introducere jeg her den rene **sæson ARMA**.
+
+Denne rene sæson ARMA, skrives ARMA$(P,Q)_s$, er givet ved
+\begin{align*}
+  \Phi_p(B^s)x_t = \Theta_Q(B^s)w_t,
+\end{align*}
+hvor \textbf{sæson operatorerne} er givet ved
+\begin{align*}
+  \Phi_P(B^s) = 1 - \Phi_1B^s - \Phi_2B^{2s} - \cdots - \Phi_PB^{Ps},
+\end{align*}
+\begin{align*}
+  \Theta_Q(B^s) = 1 - \Theta_1B^s - \Theta_2B^{2s} - \cdots - \Theta_PB^{Qs}.
+\end{align*}
+
+# Sæson ARMA notation
+Konstanten $s$ betegner sæsonperioden, lad os for eksempel antage at vores data er på måneds basis, da vil $s = 3$ være en kvartalssæson og $s = 12$ være årlig sæson.
+
+# Sæson AR eksempel
+```{r sAR_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('125')
+phi = c(rep(0,11),0.9)
+sAR = arima.sim(list(order = c(12,0,0), ar = phi), n = 200)
+sAR = ts(sAR, frequency = 12)
+plot_data_sAR <- data.frame(value = sAR, time = seq(1, length(sAR)))
+sAR_plot <- plot_data_sAR %>% 
+  ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated season AR(1) process') +
+  theme_light()
+sAR_plot
+```
+
+# Sæson AR ACF
+ACF'en for en ren sæson ARMA model har teoretisk set kun korrelation ved sæson lags, det vil sige $s, 2s, \ldots$, egenskaben følger af
+\begin{align*}
+  x_t &= \Phi x_{t-s} + w_t \\
+  &= \Phi(\Phi x_{t-2s} + w_{t-s}) + w_t \\
+  &\;\;\vdots \\
+  &= \sum_{j=0}^\infty \Phi^jw_{t-js}.
+\end{align*}
+
+# Sæson AR ACF eksempel
+```{r sAR_acf_plot, echo=F, fig.height=4, fig.width=6}
+sAR_acf_plot <- plot_data_sAR %>% 
+  select(value) %>%
+  ggAcf(lag.max = 200) +
+  scale_x_continuous(breaks = seq(0,200,12)) +
+  ggtitle('Simulated season AR(1) process') +
+  theme_light()
+sAR_acf_plot
+```
+
+# Eksempel ARMA PACF eksempel
+```{r sAR_pacf_plot, echo=F, fig.height=4, fig.width=6}
+sAR_pacf_plot <- plot_data_sAR %>% 
+  select(value) %>%
+  ggPacf(lag.max = 100) +
+  scale_x_continuous(breaks = seq(0,200,12)) +
+  ggtitle('Simulated season AR(1) process') +
+  theme_light()
+sAR_pacf_plot
+```
+
+# Multiplikativ sæson ARMA
+Hvis man en model hvor der både indgår ARMA og sæson ARMA komponenter kan man benytte sig af en såkaldt **multiplikativ sæson ARMA**, skrives ARMA$(p,q) \times (P,Q)_s$, som er givet ved
+\begin{align*}
+  \Phi_P(B^s)\phi(B)x_t = \Theta_Q(B^s)\theta(B)w_t.
+\end{align*}
+Ved at gange operatorerne sammen opnår man en form for interaktion i mellem de to modeller.
+
+Det er også muligt at inddrage flere sæsoner, hvis man for eksempel ønkser både at betragte kvartalsvis og årlig sæson.
+
+Man skal dog veje dette op imod den øgede kompleksitet af modellen.
+Alt andet lige ønsker vi den mest sparsomme model.
+
+# Ikke stationær tidsrække
+Hvis vi har at gøre med data som ikke er stationært, siger vi at vores tidsrække er integreret.
+Til dette hører en orden, forstået på den måde at hvis vores tidsrække er integreret af orden et betyder det at vi opnår en stationær tidsrække ved at differense en gang.
+
+Et eksempel på en ikke stationær tidsrække er en **random walk**.
+
+En random walk er en AR(1) process med $\phi = 1$, med andre ord er det en sum af hvidstøjsled.
+
+Før jeg givet et eksempel på en random walk vil jeg introducere **differensoperatoren**.
+
+# Differens operatoren
+Den almindelige differensoperator er givet ved
+\begin{align*}
+  \nabla x_t = (1-B)x_t = x_t - x_{t-1}.
+\end{align*}
+
+# Eksempel på random walk
+```{r random_walk_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('12')
+n = 200
+white_noise = rnorm(n)
+random_walk = rep(NA,n)
+random_walk[1] = white_noise[1]
+for (i in 2:n) {
+  random_walk[i] = random_walk[i - 1] + white_noise[i]
+}
+plot_data_random_walk <- data.frame(value = random_walk, time = seq(1, length(random_walk)))
+random_walk_plot <- plot_data_random_walk %>% 
+  ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated random walk') +
+  theme_light()
+plot_data_random_walk_diff <- data.frame(value = diff(random_walk), time = seq(1, length(diff(random_walk))))
+random_walk_diff_plot <- plot_data_random_walk_diff %>% 
+  ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated random walk differenced') +
+  theme_light()
+cowplot::plot_grid(
+  random_walk_plot, 
+  random_walk_diff_plot, 
+  ncol = 1)
+```
+
+# Eksempel på random walk ACF
+```{r random_walk_plot_acf, echo=F, fig.height=4, fig.width=6}
+random_walk_plot <- plot_data_random_walk %>%
+  select(value) %>%
+  ggAcf(lag.max = 50) +
+  ggtitle('Simulated random walk') +
+  theme_light()
+random_walk_diff_plot <- plot_data_random_walk_diff %>%
+  select(value) %>%
+  ggAcf(lag.max = 50) +
+  ggtitle('Simulated random walk differenced') +
+  theme_light()
+cowplot::plot_grid(
+  random_walk_plot, 
+  random_walk_diff_plot, 
+  ncol = 1)
+```
+
+# Udvidelse til (S)ARIMA
+Medtager vi muligheden for at anvende differensoperatoren opnår vi den såkaldte **ARIMA** model, skrives ARIMA$(p,d,q)$, der er givet ved
+\begin{align*}
+  \phi(B)\nabla^dx_t = \theta(B)w_t.
+\end{align*}
+Ønsker vi også at medtage sæson komponenter i denne model får vi det der kaldes en **SARIMA**, skrives som ARIMA$(p,d,q)\times(P,D,Q)_s$
+\begin{align*}
+  \Phi_P(B^s)\phi(B)\nabla_s^D\nabla^dx_t = \Theta_Q(B^s)\theta(B)w_t,
+\end{align*}
+bemærk at vi her både har almindelig differens samt sæson differens der er defineret ved:
+**Sæson differensen** af orden $D$ er givet ved
+\begin{align*}
+  \nabla_s^D = (1-B^s)^D x_t.
+\end{align*}
