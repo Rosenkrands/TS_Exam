@@ -44,6 +44,17 @@ For en Gaussisk process gælder
 $$\text{streng stationartiet} \Leftrightarrow \text{svag stationaritet},$$
 da en Gaussisk proces er entydigt bestemt ved dens 1. og 2. moment.
 
+# ACF
+Autokorrelationsfunktionen (ACF) for en tidsrække, $\left\{X_t\right\}_{t\in\mathbb{Z}}$, er defineret som
+\begin{align*}
+  \rho(s,t) = \frac{\gamma(s,t)}{\sqrt{\gamma(s,s)\gamma(t,t)}},
+\end{align*}
+for alle $s,t\in \mathbb{Z}$.
+
+# PACF
+
+Definition af PACF
+
 # AR proces
 En autoregressiv proces er bestemt udfra dens foregående værdier:
 
@@ -190,12 +201,12 @@ arma_pacf_plot <- plot_data_arma %>%
 arma_pacf_plot
 ```
 
-# Egenskaber for ACf og Pacf generelt
-|Model    |Acf                  |Pacf                 |
-|---------|---------------------|---------------------|
-|AR(p)    |Aftager Eksponentielt|Nul for $h > p$      |
-|MA(q)    |Nul for $h > p$      |Aftager Eksponentielt|
-|ARMA(p,q)|Aftager Eksponentielt|Aftager Eksponentielt|
+# Egenskaber for ACF og PACF generelt
+|Model      |ACF                  |PACF                 |
+|-----------|---------------------|---------------------|
+|AR($p$)    |Aftager Eksponentielt|Nul for $h > p$      |
+|MA($q$)    |Nul for $h > p$      |Aftager Eksponentielt|
+|ARMA($p,q$)|Aftager Eksponentielt|Aftager Eksponentielt|
 
 # Kausalitet
 En ARMA(p,q) model siges at være **kausal** hvis $\phi^{-1}(B)$-polynomiet eksisterer, og man kan så skrive processen som
