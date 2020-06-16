@@ -1,5 +1,5 @@
 ---
-title: '1: ARMA processer'
+title: '1: ARMA processer: Lag-polynomier, stationaritet, invertibilitet og kausalitet'
 author: "Kasper Rosenkrands"
 subtitle: Tidsrækkeanalyse
 output:
