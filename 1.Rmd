@@ -157,7 +157,7 @@ ma_pacf_plot <- plot_data_ma %>%
 ma_pacf_plot
 ```
 
-# ARMA Model
+# ARMA proces
 En ARMA model er en mere generel model end de to forrige som tager højde for både AR og MA komponenter:
 \begin{definition}[ARMA Model]
   ARMA$(p,q)$, er en stationær tidsrække $X$, som opfylder at
