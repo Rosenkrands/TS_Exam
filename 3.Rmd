@@ -1,13 +1,124 @@
 ---
-title: "Emne:"
-subtitle: "Tidsrækkeanalyse"
+title: "3: Integrerede processer (ARIMA) og long-memory modeller (ARFIMA)"
 author: Kasper Rosenkrands
+subtitle: Tidsrækkeanalyse
 output: 
   beamer_presentation:
     includes:
       in_header: misc/style.tex
 ---
 
-# Her er et slide
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,
+                      message=FALSE, warning=FALSE,
+                      fig.path='figs/',
+                      cache.path = '_cache/')
+library(ggplot2)
+library(dplyr)
+library(forecast)
+```
 
-- Her er et **vigtigt** punkt
+# Ikke stationær tidsrække
+Hvis vi har at gøre med data som ikke er stationært, siger vi at vores tidsrække er integreret.
+Til dette hører en orden, forstået på den måde at hvis vores tidsrække er integreret af orden et betyder det at vi opnår en stationær tidsrække ved at differense en gang.
+
+Et eksempel på en ikke stationær tidsrække er en **random walk**.
+
+En random walk er en AR(1) process med $\phi = 1$, med andre ord er det en sum af hvidstøjsled.
+
+Før jeg givet et eksempel på en random walk vil jeg introducere **differensoperatoren**.
+
+# Differens operatoren
+Den almindelige differensoperator er givet ved
+\begin{align*}
+  \nabla x_t = (1-B)x_t = x_t - x_{t-1}.
+\end{align*}
+
+# Eksempel på random walk
+```{r random_walk_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('12')
+n = 200
+white_noise = rnorm(n)
+random_walk = rep(NA,n)
+random_walk[1] = white_noise[1]
+for (i in 2:n) {
+  random_walk[i] = random_walk[i - 1] + white_noise[i]
+}
+plot_data_random_walk <- data.frame(value = random_walk, time = seq(1, length(random_walk)))
+random_walk_plot <- plot_data_random_walk %>% 
+  ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated random walk') +
+  theme_light()
+plot_data_random_walk_diff <- data.frame(value = diff(random_walk), time = seq(1, length(diff(random_walk))))
+random_walk_diff_plot <- plot_data_random_walk_diff %>% 
+  ggplot(aes(time, value)) +
+  geom_line() +
+  ggtitle('Simulated random walk differenced') +
+  theme_light()
+cowplot::plot_grid(
+  random_walk_plot, 
+  random_walk_diff_plot, 
+  ncol = 1)
+```
+
+# Eksempel på random walk ACF
+```{r random_walk_plot_acf, echo=F, fig.height=4, fig.width=6}
+random_walk_plot <- plot_data_random_walk %>%
+  select(value) %>%
+  ggAcf(lag.max = 50) +
+  ggtitle('Simulated random walk') +
+  theme_light()
+random_walk_diff_plot <- plot_data_random_walk_diff %>%
+  select(value) %>%
+  ggAcf(lag.max = 50) +
+  ggtitle('Simulated random walk differenced') +
+  theme_light()
+cowplot::plot_grid(
+  random_walk_plot, 
+  random_walk_diff_plot, 
+  ncol = 1)
+```
+
+# ARIMA model
+Generelt siger vi, for $p,d,q \geq 0$, at tidsrækken $\{ x_t \}_{t \in \mathbb{Z}}$ er en ARIMA$(p,d,q)$ proces hvis 
+\begin{align*}
+    y_t = \nabla^d x_t = (1-B)^dx_t,
+\end{align*}
+er en ARMA(p,q). 
+I så fald skriver vi at
+\begin{align*}
+    \phi(B)\nabla^dx_t = \theta(B)w_t.
+\end{align*}
+
+# Long memory modeller
+Vi indeler tidsrækker i to kategorier
+\begin{enumerate}
+  \item Kort hukommelse
+  \begin{align*}
+    \sum | \gamma(h) | < \infty.
+  \end{align*}
+  \item Lang hukommelse
+  \begin{align*}
+    \sum | \gamma(h) | = \infty.
+  \end{align*}
+\end{enumerate}
+For at behandle tidsrækker med lang hukommelse benyttes **ARFIMA**.
+
+# ARFIMA model
+For ikke-negative heltal $p,q$ samt $-0.5 < d < 0.5$, siger vi at tidsrækken $\{ x_t \}_{t \in \mathbb{Z}}$ er en **ARFIMA**$(p,d,q)$ proces hvis
+\begin{align*}
+    y_t = \nabla^dx_t = (1-B)^dx_t
+\end{align*}
+er ARMA$(p,q)$.
+
+Forskellen mellem ARIMA og ARIFMA er at $d$ i ARIMA er begrænset til et heltal, hvor vi i ARFIMA ikke har denne begrænsing.
+
+Den normale differens operator giver dog ikke længere mening når $d$ antager heltals værdier, derfor introducere vi fraktionel differens:
+\begin{align*}
+    \nabla^d = (1-B)^d = 1 + \sum_{j=1}^{\infty} \frac{\Gamma(j-d)}{\Gamma(-d)j!}B^j
+\end{align*}
+hvor gamma funktionen er defineret ved
+\begin{align*}
+    \Gamma(x) = \int_0^\infty t^{x-1}e^{-t}dt \text{ for } x \neq 0, -1, -2, \ldots
+\end{align*}
