@@ -52,8 +52,14 @@ Autokorrelationsfunktionen (ACF) for en tidsrække, $\left\{X_t\right\}_{t\in\ma
 for alle $s,t\in \mathbb{Z}$.
 
 # PACF
-
-Definition af PACF
+Den **partielle autokorrelations funktion (PACF)** for en stationær tidsrække, $x_t$, givet ved $\phi_{hh}$, for $h = 1, 2, \ldots$, is
+\begin{align*}
+  \phi_{11} = \corr(x_{t+1}, x_t) = \rho(1),
+\end{align*}
+and
+\begin{align*}
+  \phi_{hh} = \corr(x_{t + h} - \hat{x}_{t + h}, x_t - \hat{x}_t), \quad \text{for } h \geq 2.  
+\end{align*}
 
 # AR proces
 En autoregressiv proces er bestemt udfra dens foregående værdier:
