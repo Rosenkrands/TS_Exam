@@ -1,5 +1,5 @@
 ---
-title: "Emne:"
+title: "4: Spektralanalyse"
 subtitle: "Tidsrækkeanalyse"
 author: Kasper Rosenkrands
 output: 
@@ -8,6 +8,38 @@ output:
       in_header: misc/style.tex
 ---
 
-# Her er et slide
+# Tidsdomænet og frekvensdomænet
+Når vi prøver at analysere en tidsrække i **tidsdomænet**, betyder at vi prøver at forklare den nuværende værdi som funktion af værdier tilbage i tiden på en eller anden vis.
 
-- Her er et **vigtigt** punkt
+**Frekvensdomænet** adskiller sig fra denne tilfgang og prøver i stedet at beskrive en (oscillerende) tidsrække ved hjælp af sinus (og/eller cosinus) funktionen.
+
+# Periodisk proces
+Vi kalder en proces for periodisk hvis den opfylder
+\begin{align*}
+  x_t = A \cos(2\pi\omega t + \phi) \quad \text{for } t = 0, \pm 1, \pm 2, \ldots,
+\end{align*}
+hvor $\omega$ angiver frekvensen (svingninger per tid), $A$ er bestemmer ``højden'' eller amplituden and $\phi$, der kaldes fasen, bestemmer forskydningen af kurven.
+
+Det stokatiske element fremkommer idet vi tillader $A$ og $\phi$ at være stokastiske.
+
+# Omskriving med trigonometrisk identitet
+Ved at bruge den trigonometriske identitet
+\begin{align*}
+  \cos(\alpha \pm \beta) = \cos(\alpha)\cos(\beta) \mp \sin(\alpha)\sin(\beta),
+\end{align*}
+kan vi lave følgende omskrivning
+\begin{align*}
+  x_t &= A \cos(2\pi\omega t + \phi) \\
+  &= U_1\cos(2\pi\omega t) + U_2\sin(2\pi\omega t),
+\end{align*}
+hvor $U_1 = A \cos(\phi)$ og $U_2 = -A\sin(\phi)$.
+
+Under visse antagelser er $U_1$ og $U_2$ uafhængige standard normalt fordelte, hvilket vi vil antage i det følgende.
+
+# Autokovarians funktion
+For at udlede autokovarians funktionen for en periodisk proces, starter vi med at introducere
+$$c_t = \cos(2\pi \omega t) \quad \text{og} \quad s_t = \sin(2\pi \omega t),$$
+ved brug at denne notation har vi autokovariansen givet ved
+\begin{align*}
+  \gamma(h) = \cov(x_{t + h}, x_t) &= \cov()
+\end{align*}
