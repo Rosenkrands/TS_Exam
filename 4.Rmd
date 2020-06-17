@@ -39,7 +39,53 @@ Under visse antagelser er $U_1$ og $U_2$ uafhængige standard normalt fordelte, 
 # Autokovarians funktion
 For at udlede autokovarians funktionen for en periodisk proces, starter vi med at introducere
 $$c_t = \cos(2\pi \omega t) \quad \text{og} \quad s_t = \sin(2\pi \omega t),$$
-ved brug at denne notation har vi autokovariansen givet ved
+ved brug at denne notation har vi autokovariansen givet ved\footnote{ved at bruge den førnævnte trigonometriske identitet}
 \begin{align*}
-  \gamma(h) = \cov(x_{t + h}, x_t) &= \cov()
+  \gamma(h) &= \cov(x_{t + h}, x_t)\\
+  &= \cov(U_1c_{t + h} + u_2s_{t + h}, U_1c_{t} + u_2s_{t}) \\
+  &= 
+  \cov(U_1c_{t + h},U_1c_{t}) +
+  \cov(U_1c_{t + h},U_2s_{t}) \\
+  &\quad+
+  \cov(U_2s_{t + h},U_1c_{t}) +
+  \cov(U_2s_{t + h},U_2s_{t}) \\
+  &= \sigma^2c_{t+h}c_t + \sigma^2s_{t+h}s_t \\
+  &= \sigma^2\cos(2\pi\omega(t+h) - 2\pi\omega t) \\
+  &= \sigma^2\cos(2\pi\omega h).
+\end{align*}
+
+# Den spektrale fordelingsfunktion
+Betragter vi en periodisk proces med fast frekvens, givet ved $\omega_0$, så kan autokovariansfunktionen udtrykkes som 
+\begin{align*}
+  \gamma(h)\int_{-\frac{1}{2}}^{\frac{1}{2}}e^{2\pi i \omega h} dF(\omega),
+\end{align*}
+hvor den kumulative fordelingsfunktion (spektrale fordelingsfunktion) er givet ved
+\begin{align*}
+  F(\omega) = 
+  \begin{cases}
+    0 & \text{hvis }\omega < -\omega_0 \\
+    \frac{\sigma^2}{2} & \text{hvis }-\omega_0 \leq \omega < \omega_0 \\
+    \sigma^2 & \text{ellers}
+  \end{cases}
+\end{align*}
+
+# Visualisering af den kumulative fordelingsfunktion
+\begin{figure}
+  \begin{tikzpicture}
+    \draw [->] (-5,0) -- (5,0) node[anchor=north] {$\omega$};
+    \draw [->] (0,-2) -- (0,4.5) node[align=center,above] {$F(\omega)$};
+    \draw [thick, blue] (-5,0) -- (-2,0) node[align=center,below] {$-\omega_0$};
+    \draw [thick, blue] (-2,2) node[anchor=east] {$\frac{\sigma^2}{2}$} -- (2,2);
+    \draw [thick, blue] (2,4) node[anchor=east] {$\sigma^2$} -- (5,4);
+    \draw [blue] (2,0) node {{\footnotesize l}};
+    \draw [blue] (-2,0) node {{\footnotesize l}};
+    \draw [blue] (2,0) node[align=center,below] {$\omega_0$};
+  \end{tikzpicture}
+  \caption{Kumulativ fordelingsfunktion.}
+\end{figure}
+
+# Spektraltætheden
+Hvis en tidsrække $\{ x_t \}_{t \in \mathbb{Z}}$ opfylder betingelsen, $\sum_{h = - \infty}^{\infty} |\gamma(h)| < \infty$ (autokovariansfunktionen er absolut summabel), så definerer vi spektraltætheden for tidsrækken ved
+\begin{align*}
+    f(\omega) = \sum_{h = -\infty}^{\infty} \gamma(h) e^{-2 \pi i \omega h} \quad \text{for } - \infty < \omega < \infty
 \end{align*}
