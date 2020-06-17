@@ -24,7 +24,11 @@ Til dette hører en orden, forstået på den måde at hvis vores tidsrække er i
 
 Et eksempel på en ikke stationær tidsrække er en **random walk**.
 
-En random walk er en AR(1) process med $\phi = 1$, med andre ord er det en sum af hvidstøjsled.
+En random walk er en AR(1) process med $\phi = 1$
+\begin{align*}
+  x_t = x_{t - 1} + w_t,
+\end{align*}
+med andre ord er det en sum af hvidstøjsled.
 
 Før jeg givet et eksempel på en random walk vil jeg introducere **differensoperatoren**.
 
