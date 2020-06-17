@@ -1,5 +1,5 @@
 ---
-title: "Emne:"
+title: "5: Unit-root modeller og test herfor"
 subtitle: "Tidsrækkeanalyse"
 author: Kasper Rosenkrands
 output: 
@@ -8,6 +8,23 @@ output:
       in_header: misc/style.tex
 ---
 
-# Her er et slide
+# Test for enhedsrod
 
-- Her er et **vigtigt** punkt
+Betragt en ARMA$(p,q)$ model der opfylder
+\begin{align*}
+  \phi(B)x_t = \theta(B)w_t.
+\end{align*}
+Hvis man ønsker at afgøre om den ARMA$(p,q)$ proces er stationær, skal man kigge på AR polynomiet der er givet ved
+\begin{align*}
+  \phi(z) = 1 - \phi_1z - \phi_2z - \cdots - \phi_pz^p.
+\end{align*}
+Hvis alle dette polynomiums rødder liger udenfor enhedscirklen siger vi at tidsrækken $\{x_t\}_{t \in \mathbb{Z}}$ er stationær.
+
+Hvis der derimod er en eller flere **enhedsrødder** er tidsrækken ikke stationær.
+
+Det vil derfor være gavnligt at have en værktøj der kan teste for disse såkaldte enhedsrødder.
+
+Derfor introduceres nu **unit-root** test.
+
+# Dickey-Fuller test
+Jeg vil introducere både en DF-0 samt en DF-$\mu$ test. Lad os starte med DF-0.
