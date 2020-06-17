@@ -110,10 +110,10 @@ Hvis $\theta>0$ (positiv autokorrelation) er tætheden domineret af lave frekven
 Hvis $\theta<0$ (negativ autokorrelation) er tætheden domineret af høje frekvenser og er grov i tidsdomænet
 
 Betragtes spektraltætheden for en hvidstøjsproces ses det at 
-    \begin{align*}
-        f(\omega) = \sum_{h=-\infty}^\infty\gamma(h)e^{-2\pi i\omega h}
-                  = \gamma(0)e^0 = \sigma_w^2
-    \end{align*}
+\begin{align*}
+  f(\omega) = \sum_{h=-\infty}^\infty\gamma(h)e^{-2\pi i\omega h}
+  = \gamma(0)e^0 = \sigma_w^2
+\end{align*}
 
 # Spektraltæthed eksempler
 ```{r spectral_plot, echo=F, fig.height=4, fig.width=6}
