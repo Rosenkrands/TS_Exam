@@ -8,6 +8,16 @@ output:
       in_header: misc/style.tex
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,
+                      message=FALSE, warning=FALSE,
+                      fig.path='figs/',
+                      cache.path = '_cache/')
+library(ggplot2)
+library(dplyr)
+library(forecast)
+```
+
 # Tidsdomænet og frekvensdomænet
 Når vi prøver at analysere en tidsrække i **tidsdomænet**, betyder at vi prøver at forklare den nuværende værdi som funktion af værdier tilbage i tiden på en eller anden vis.
 
@@ -87,5 +97,88 @@ hvor den kumulative fordelingsfunktion (spektrale fordelingsfunktion) er givet v
 # Spektraltætheden
 Hvis en tidsrække $\{ x_t \}_{t \in \mathbb{Z}}$ opfylder betingelsen, $\sum_{h = - \infty}^{\infty} |\gamma(h)| < \infty$ (autokovariansfunktionen er absolut summabel), så definerer vi spektraltætheden for tidsrækken ved
 \begin{align*}
-    f(\omega) = \sum_{h = -\infty}^{\infty} \gamma(h) e^{-2 \pi i \omega h} \quad \text{for } - \infty < \omega < \infty
+  f(\omega) = \sum_{h = -\infty}^{\infty} \gamma(h) e^{-2 \pi i \omega h} \quad \text{for } - \infty < \omega < \infty.
 \end{align*}
+
+# AR, MA og hvid støj
+Hvis $\phi>0$ (positiv autokorrelation) er tætheden domineret af lave frekvenser og er glat i tidsdomænet
+
+Hvis $\phi<0$ (negativ autokorrelation) er tætheden domineret af høje frekvenser og er grov i tidsdomænet
+
+Hvis $\theta>0$ (positiv autokorrelation) er tætheden domineret af lave frekvenser og er glat i tidsdomænet
+
+Hvis $\theta<0$ (negativ autokorrelation) er tætheden domineret af høje frekvenser og er grov i tidsdomænet
+
+Betragtes spektraltætheden for en hvidstøjsproces ses det at 
+    \begin{align*}
+        f(\omega) = \sum_{h=-\infty}^\infty\gamma(h)e^{-2\pi i\omega h}
+                  = \gamma(0)e^0 = \sigma_w^2
+    \end{align*}
+
+# Spektraltæthed eksempler
+```{r spectral_plot, echo=F, fig.height=4, fig.width=6}
+ar_coefs <- c(-.8, -.5, .5, .8, .9)
+spec <- TSA::ARMAspec(model = list(ar = -.9), plot = FALSE)
+spec <- data.frame(spectrum = spec$spec, frequency = spec$freq, phi = as.character(-.9))
+for (coef in ar_coefs) {
+  temp <- TSA::ARMAspec(model = list(ar = coef), plot = FALSE)
+  temp <- data.frame(spectrum = temp$spec, frequency = temp$freq, phi = as.character(coef))
+  spec <- rbind(spec, temp)
+}
+ar_plot <- spec %>%
+  ggplot(aes(frequency, spectrum, color = phi)) +
+  geom_line() +
+  theme_light() +
+  ggtitle('Spectral density for AR(1)')
+
+ma_coefs <- c(-.9, -.5, .5, .9)
+spec <- TSA::ARMAspec(model = list(ma = -.9), plot = FALSE)
+spec <- data.frame(spectrum = spec$spec, frequency = spec$freq, theta = as.character(-.9))
+for (coef in ma_coefs) {
+  temp <- TSA::ARMAspec(model = list(ma = coef), plot = FALSE)
+  temp <- data.frame(spectrum = temp$spec, frequency = temp$freq, theta = as.character(coef))
+  spec <- rbind(spec, temp)
+}
+ma_plot <- spec %>%
+  ggplot(aes(frequency, spectrum, color = theta)) +
+  geom_line() +
+  theme_light() +
+  ggtitle('Spectral density for MA(1)')
+
+cowplot::plot_grid(ar_plot, ma_plot, ncol = 1)
+```
+
+# Spektraltæthed eksempler
+```{r ar_ma_sim_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('666')
+n=100
+ar_sim <- arima.sim(n = n, list(ar = 0.9))
+plot_data <- data.frame(value = as.numeric(ar_sim), time = seq(1, length(ar_sim)), phi = as.character(0.9))
+ar_sim <- arima.sim(n = n, list(ar = -0.9))
+temp <- data.frame(value = as.numeric(ar_sim), time = seq(1, length(ar_sim)), phi = as.character(-0.9))
+plot_data <- rbind(plot_data, temp)
+ar_plot <- plot_data %>% ggplot(aes(time, value , color = phi)) +
+  geom_line() +
+  ggtitle('Simulated AR(1) processes') +
+  facet_wrap(~phi)+
+  theme_light() +
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank()
+  )
+ar_sim <- arima.sim(n = n, list(ma = 0.9))
+plot_data <- data.frame(value = as.numeric(ar_sim), time = seq(1, length(ar_sim)), theta = as.character(0.9))
+ar_sim <- arima.sim(n = n, list(ma = -0.9))
+temp <- data.frame(value = as.numeric(ar_sim), time = seq(1, length(ar_sim)), theta = as.character(-0.9))
+plot_data <- rbind(plot_data, temp)
+ma_plot <- plot_data %>% ggplot(aes(time, value, color = theta)) +
+  geom_line() +
+  facet_wrap(~theta) +
+  ggtitle('Simulated MA(1) processes') +
+  theme_light() +
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank()
+  )
+cowplot::plot_grid(ar_plot,ma_plot,ncol=1)
+```
