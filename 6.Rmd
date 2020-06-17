@@ -1,5 +1,5 @@
 ---
-title: "Emne:"
+title: "6: Spuriøs regression og kointegration"
 subtitle: "Tidsrækkeanalyse"
 author: Kasper Rosenkrands
 output: 
@@ -8,6 +8,19 @@ output:
       in_header: misc/style.tex
 ---
 
-# Her er et slide
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,
+                      message=FALSE, warning=FALSE,
+                      fig.path='figs/',
+                      cache.path = '_cache/')
+library(ggplot2)
+library(dplyr)
+library(forecast)
+```
 
-- Her er et **vigtigt** punkt
+# Spuriøs regression
+En spuriøs sammenhæng ses mellem ot variable som er korrellerede men ikke kan bruges til at forklare korrellationen.
+
+Et eksempel på en spuriøs sammenhæng er samvariationen mellem antal isvafler der sælges og antal drukneulykker. Sammenhængen er spuriøs da vi ikke kan konkludere at man drukner af at spise en isvaffel, der er nok nærmere en underliggende variabel som påvirker begge disse variable (årstiden for eksempel).
+
+I tidsrækkeanalyse kaldes det for **spuriøs regression** når man kigger på sammenhænge mellem uafhængige ikke-stationære tidsrækker. 
