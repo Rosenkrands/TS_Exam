@@ -8,6 +8,16 @@ output:
       in_header: misc/style.tex
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,
+                      message=FALSE, warning=FALSE,
+                      fig.path='figs/',
+                      cache.path = '_cache/')
+library(ggplot2)
+library(dplyr)
+library(forecast)
+```
+
 # Test for enhedsrod
 
 Betragt en ARMA$(p,q)$ model der opfylder
@@ -27,4 +37,122 @@ Det vil derfor være gavnligt at have en værktøj der kan teste for disse såka
 Derfor introduceres nu **unit-root** test.
 
 # Dickey-Fuller test
-Jeg vil introducere både en DF-0 samt en DF-$\mu$ test. Lad os starte med DF-0.
+Jeg vil introducere både en DF-0 en DF-$\mu$ samt en DF-$\tau$ test. Lad os starte med DF-0.
+
+Her antages det at $x_t$ er en AR(1) proces
+\begin{align*}
+  x_t = \phi x_{t - 1} + w_t.
+\end{align*}
+Hvis vi trækker $x_{t - 1}$ fra på begge sider fåes
+\begin{align*}
+  \nabla x_t &= (\phi - 1)x_{t - 1} + w_t \\
+  &= \delta x_{t - 1} + w_t,
+\end{align*}
+hvor $\delta = (\phi - 1)$.
+
+# Hypoteserne i DF-0
+Hypoteserne i DF-O er de følgende
+\begin{align*}
+  \mathcal{H}_0&:  \delta  = 0,\\
+  \mathcal{H}_1&: |\delta| < 1.
+\end{align*}
+\textbf{Nulhypotesen} svarer til at $\phi = 1$ (\textbf{random walk}). Dette svarer til at der haves en enhedsrod, idet
+\begin{align*}
+  \phi(z) = (1-\phi z) = (1-1\cdot z) = 0 \Longleftrightarrow z=1,
+\end{align*}
+og dermed vil processen ikke være stationær.
+
+\textbf{Den alternative hypotese} svarer til at $|\phi|<1$, som svarer til at processen ikke har en enhedsrod, og dermed er stationær.
+
+# Hypotesetest i DF-0
+For at teste hypoteserne, anvendes en $t$-test. \textbf{Teststatistikken} er givet ved
+\begin{align*}
+  t_{DF} = \frac{\hat{\delta}}{\text{se}\left(\hat{\delta}\right)}, \end{align*}
+hvor $\hat{\delta}$ opnås ved OLS. (Regression af $\nabla x_t$ på $x_{t-1}$).
+
+Under nulhypotesen vil teststatistikken dog ikke følge en $t$-fordeling.
+
+Der findes ikke en lukket form for denne fordeling så det er nødvendigt at slå kritiske værdier op i en tabel.
+
+# DF-0 eksempel
+Som et eksempel på anvendelsen af DF-0 testen har jeg simuleret to tidsrækker.
+
+Den første er en **AR(1)** proces med $\phi = 0.9$ og den anden er en **random walk**.
+
+# Plot af de simulerede tidsrækker
+```{r unit_plot, echo=F, fig.height=4, fig.width=6}
+set.seed('545')
+ts_ar <- arima.sim(model = list(ar = 0.9), n = 50)
+ts_rw <- cumsum(rnorm(50))
+
+plot_data <- data.frame(
+  value = c(as.numeric(ts_ar), ts_rw), 
+  time = rep(seq(1,50), 2), 
+  timeseries = c(rep('AR',50),rep('RW',50))
+)
+
+plot_data %>%
+  ggplot(aes(time,value,color = timeseries)) +
+  geom_line() +
+  #facet_wrap(~timeseries) +
+  ggtitle('Simulated AR(1) and random walk') +
+  theme_light()
+```
+
+# DF-0 test på AR(1) processen
+\tiny
+```{r, echo = F}
+library(urca)
+DFO_ar <- ur.df(ts_ar)
+summary(DFO_ar)
+```
+\normalsize
+
+# DF-0 test på random walk processen
+\tiny
+```{r, echo = F}
+DFO_rw <- ur.df(ts_rw)
+summary(DFO_rw)
+```
+\normalsize
+
+# DF-$\mu$ og DF-$\tau$
+Vi kan udvide DF-0 testen til en DF-$\mu$ test ved at inkludere et drift led, i det tilfælde bliver nulhypotesen til: **random walk med drift**
+$$x_t = \mu + \phi x_{t-1} + w_t.$$
+
+Ydermere kan vi udvide til DF-$\tau$ testen ved at inkludere en lineær trend, foruden drift leddet, i det tilfælde bliver nulhypotesen så: **random walk med drift plus en lineær trend**
+$$x_t = \mu + \tau t + \phi x_{t-1} + w_t.$$
+
+# ADF test
+Ofte er antagelsen om AR(1) for restriktiv, derfor findes der en udvidelse til DF-testen som kaldes **ADF**-test (augmented Dickey-Fuller).
+
+Det antages at $x_t$ er en AR$(p)$ model
+\begin{align*}
+ x_t & = \phi_1 x_{t-1} + \phi_2 x_{t-2} + \cdots + \phi_p x_{t-p} + w_t.
+\end{align*}
+Her kan man igen omskrive ved at trække $x_{t-1}$ fra på begge sider,
+\begin{align*}
+  \nabla x_t = \delta x_{t-1} - \sum_{j=1}^{p-1} \tilde{\delta}_j \nabla x_{t-j} + w_t,
+\end{align*}
+hvor
+\begin{align*}
+  \delta &= \phi_1 + \cdots + \phi_p - 1\\
+  \tilde{\delta}_j &= \phi_{j+1} + \cdots + \phi_p \quad \text{for} \quad j=1, \dots p-1.
+\end{align*}
+
+# ADF hypoteserne
+Hypoteserne for ADF-testen er de samme som for DF-testen. 
+\begin{align*}
+\mathcal{H}_0&:  \delta  = 0,\\
+\mathcal{H}_1&: |\delta| < 1.
+\end{align*}
+\textbf{Nulhypotesen} svarer til at $\phi_1 + \phi_2 + \cdots + \phi_p = 1$. Dette svarer til at der haves en enhedsrod, idet
+\begin{align*}
+    \phi(z) &= ( 1 - \phi_1 z - \phi_2 z^2 - \cdots - \phi_p z^p) \\
+    \Downarrow&\\
+    \phi(1) &= (1 - \phi_1 \cdot 1 - \phi_2 \cdot 1^2 - \cdots - \phi_p \cdot 1^p)\\
+    &= 1 - 1\\
+    &= 0
+\end{align*}
+og dermed vil processen ikke være stationær.
+
