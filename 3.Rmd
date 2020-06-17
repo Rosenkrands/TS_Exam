@@ -122,3 +122,82 @@ hvor gamma funktionen er defineret ved
 \begin{align*}
     \Gamma(x) = \int_0^\infty t^{x-1}e^{-t}dt \text{ for } x \neq 0, -1, -2, \ldots
 \end{align*}
+
+# Fraktionel differens eksempel
+For at give et eksempel på en lang hukommelse vil jeg simulere en sådan tidsrække
+
+```{r}
+library(fracdiff)
+set.seed('123')
+y <- fracdiff.sim(
+  1000, 
+  ar = .6, 
+  ma = .25, 
+  d = .3
+)
+```
+
+# Plot af den simulerede tidsrække
+
+```{r frac_diff_plot, echo=F, fig.height=4, fig.width=6}
+plot_data_frac <- data.frame(value = y$series, time = seq(1,length(y$series),1))
+
+frac_plot <- plot_data_frac %>%
+  ggplot(aes(time,value)) +
+  geom_line() +
+  ggtitle('Simulated fractional differenced time series') +
+  theme_light()
+frac_plot
+```
+
+# Informations kriterier
+
+```{r}
+AIC(fit11 <- fracdiff(y$series, nar = 1, nma = 1))
+AIC(fit10 <- fracdiff(y$series, nar = 1, nma = 0))
+AIC(fit01 <- fracdiff(y$series, nar = 0, nma = 1))
+AIC(fit00 <- fracdiff(y$series, nar = 0, nma = 0))
+```
+
+# Koefficienter
+
+```{r}
+fit11$d
+```
+
+```{r res_plot, echo=F, fig.height=4, fig.width=6}
+library(astsa)
+
+y.fd <- diffseries(y$series, fit11$d)
+fit11arima <- arima(y.fd, order=c(1,0,1))
+
+plot_data_res <- data.frame(value = residuals(fit11arima), time = seq(1,length(residuals(fit11arima)),1))
+
+res_plot <- plot_data_res %>%
+  ggplot(aes(time,value)) +
+  geom_line() +
+  ggtitle('Residuals from the ARFIMA model') +
+  theme_light()
+
+cowplot::plot_grid(frac_plot, res_plot, ncol = 1)
+```
+
+# ACF plot
+
+```{r acf_comp_plot, echo=F, fig.height=4, fig.width=6}
+lag.max = 40
+
+frac_acf_plot <- plot_data_frac %>%
+  select(value) %>%
+  ggAcf(lag.max = lag.max) +
+  ggtitle('Simulated fractional differenced time series') +
+  theme_light()
+
+res_acf_plot <- plot_data_res %>%
+  select(value) %>%
+  ggAcf(lag.max = lag.max) +
+  ggtitle('Residuals from the ARFIMA model') +
+  theme_light()
+
+cowplot::plot_grid(frac_acf_plot, res_acf_plot, ncol = 1)
+```
