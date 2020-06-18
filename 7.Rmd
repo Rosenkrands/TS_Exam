@@ -8,6 +8,16 @@ output:
       in_header: misc/style.tex
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=FALSE,
+                      message=FALSE, warning=FALSE,
+                      fig.path='figs/',
+                      cache.path = '_cache/')
+library(ggplot2)
+library(dplyr)
+library(forecast)
+```
+
 # Afkast definitioner
 Først vil jeg definere forskellige former for afkast.
 Vi starter med at lade $p_t$ være prise til tid $t$ af et aktiv.
@@ -44,7 +54,121 @@ $$ \kappa = \frac{\mathbb{E}\left[X - \mu\right]^4}{\left(\mathbb{E}\left[X - \m
 # ARCH(1)
 Hvis vi lader $\varepsilon_t \sim N(0,1)$ være i.i.d. og $\alpha_0 > 0, \alpha_1 > 0$. Så kaldes
 \begin{align*}
-    y_t &= \sigma_t \varepsilon_t\\
-    \sigma_t^2 &= \alpha_0 + \alpha_1 y_{t-1}^2
+  y_t &= \sigma_t \varepsilon_t\\
+  \sigma_t^2 &= \alpha_0 + \alpha_1 y_{t-1}^2
 \end{align*}
 for en ARCH(1) model.
+
+De betingede fordelinger er Gaussiske
+\begin{align*}
+    y_t | y_{t-1} \sim N(0,\alpha_0 + \alpha_1 y_{t-1}^2).
+\end{align*}
+
+# Middelværdi og varians
+
+Fra law of total expectation har vi
+\begin{align*}
+  E[y_t] = E[E[y_t | y_{t-1}]] = 0.
+\end{align*}
+
+Fra variansen af den betingede fordeling fås
+\begin{align*}
+  E[y^2_t] = E[E[y_t^2 | y_{t-1}]] = E[\alpha_0 + \alpha_1 y_{t-1}^2] = \alpha_0 + \alpha_1 E(y_{t-1}^2)
+\end{align*}
+Dette er en determistisk første ordensdifferensligning for variansen. 
+Hvis denne antages endelig er den eneste løsning konstanten
+\begin{align*}
+  E[y^2_t] = \frac{\alpha_0}{1-\alpha_1}
+\end{align*}
+hvor det kræves at $\alpha_1 < 1$.
+
+# Autokovarians
+Vi kan vise $y_t$ er en ukorreleret følge for $h > 0$, i det
+\begin{align*}
+    Cov(y_{t+h}, y_t) &= E[y_{t+h}y_t]\\
+    &= E[E[y_{t+h}y_t | y_{t+h-1}]]\\
+    &= E \Bigg[ y_t E[y_{t+h} | y_{t+h-1}] \Bigg]\\
+    &= 0
+\end{align*}
+Dette afhænger ikke af $t$ og dermed er en ARCH(1) stationær for $\alpha_1 < 1$.
+
+# ARCH(1) eksempel
+
+```{r arch_plot, echo=F, fig.height=4, fig.width=6}
+set.seed(654321)
+n = 500
+arch <- TSA::garch.sim(alpha = c(.1, .9), n = n)
+plot_data <- data.frame(
+  value = c(arch, arch^2, abs(arch)),
+  time = rep(1:n,3),
+  timeseries = c(
+    rep('original',n),
+    rep('squared',n),
+    rep('absolute',n)
+  )
+)
+
+(arch_plot <- plot_data %>%
+  filter(timeseries == 'original') %>%
+  ggplot(aes(time,value)) +
+  geom_line() +
+  theme_light() +
+  ggtitle('Simulated ARCH(1) timeseries'))
+```
+
+# ACF eksempel
+```{r arch_acf_plot, echo=F, fig.height=5, fig.width=6}
+arch_acf_org <- plot_data %>%
+  filter(timeseries == 'original') %>%
+  select(value) %>%
+  ggAcf(lag.max = 50) +
+  theme_light() +
+  ggtitle('ACF of original timeseries') +
+  xlab('') +
+  ylab('')
+
+arch_acf_sqr <- plot_data %>%
+  filter(timeseries == 'squared') %>%
+  select(value) %>%
+  ggAcf(lag.max = 50) +
+  theme_light() +
+  ggtitle('ACF of squared timeseries') +
+  xlab('') +
+  ylab('')
+
+arch_acf_abs <- plot_data %>%
+  filter(timeseries == 'absolute') %>%
+  select(value) %>%
+  ggAcf(lag.max = 50) +
+  theme_light() +
+  ggtitle('ACF of absolute timeseries') +
+  xlab('') +
+  ylab('')
+
+cowplot::plot_grid(
+  arch_acf_org,
+  arch_acf_sqr,
+  arch_acf_abs,
+  ncol = 1
+)
+```
+
+# GARCH(1,1)
+Vi kan lave en udvidelse fra ARCH(1) til GARCH(1,1) ved at inkludere et reelt autoregressivt led af variansen
+\begin{align*}
+    \sigma^2_t = \alpha_0 + \alpha_1 y_{t-1}^2 + \beta_1 \sigma_{t-1}^2 \text{ for } \alpha_1 + \beta_1 < 1.
+\end{align*}
+GARCH(1,1) betyder at
+\begin{align*}
+    y_t | y_{t-1} \sim N(0, \sigma_t^2),
+\end{align*}
+hvor 
+\begin{align*}
+    \sigma_t^2 = \alpha_0 + \alpha_1 y_{t-1}^2 + \beta_1 \sigma_{t-1}^2.
+\end{align*}
+
+# ARMA-(G)ARCH
+Man kan udvide den sædvanlige ARMA model til at tage højde for volatility clustering ved blot at kombinere de to.
+
+Lad $z_t$ være en ARMA proces og $y_t$ være en (G)ARCH, da vil $x_t$ være en **ARMA-GARCH** hvis det gælder at
+$$x_t = z_t + y_t.$$
