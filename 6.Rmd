@@ -72,3 +72,16 @@ Så betyder det at de to tidsrækker **kointegrerer** og vi kan da gå til trin 
   hvor $\hat{w}_{t - 1} = x_{1,t-1} - \hat{\mu} - \hat{\beta}_2x_{2,t-1}$.
   \item Værdien af $\lambda$ bestemmer fejlkorrektions-hastigheden, den vil altid være negativ da vi ellers vil divergere fra langsigts ligevægt.
 \end{enumerate}
+
+# Kointegration eksempel
+```{r}
+set.seed(123456)
+e1 <- rnorm(100)
+e2 <- rnorm(100)
+y1 <- cumsum(e1)
+y2 <- 0.6*y1+e2
+
+lr.reg <- lm(y2 ~ y1)
+error <- residuals(lr.reg)
+```
+
