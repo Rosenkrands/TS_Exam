@@ -19,8 +19,56 @@ library(forecast)
 ```
 
 # Spuriøs regression
-En spuriøs sammenhæng ses mellem ot variable som er korrellerede men ikke kan bruges til at forklare korrellationen.
+En spuriøs sammenhæng ses mellem to variable som er korrellerede men ikke kan bruges til at forklare korrellationen.
 
 Et eksempel på en spuriøs sammenhæng er samvariationen mellem antal isvafler der sælges og antal drukneulykker. Sammenhængen er spuriøs da vi ikke kan konkludere at man drukner af at spise en isvaffel, der er nok nærmere en underliggende variabel som påvirker begge disse variable (årstiden for eksempel).
 
-I tidsrækkeanalyse kaldes det for **spuriøs regression** når man kigger på sammenhænge mellem uafhængige ikke-stationære tidsrækker. 
+I tidsrækkeanalyse kaldes det for **spuriøs regression** når man kigger på sammenhænge mellem uafhængige ikke-stationære tidsrækker.
+
+# Måder at undgå det spuriøse regressions problem
+En måde at undgå spuriøs regression er at differense de I(1) tidsrækker man betragter, for på den måde at åbne noget stationært.
+
+Denne tilgang er dog ikke altid tilstrækkelig i visse økonomiske anvendelser hvor information om lang tids sammenhænge vil gå tabt ved at gå fra at betragte for eksempel priser til at betragte afkast.
+
+Derfor bliver man nødt til at finde en måde at analysere sammenhænge mellem ikke stationære tidsrækker uden at differense. Det kan man gøre ved hjælp af **kointegration**.
+
+# Kointegration
+Indgangene i en vektor $\textbf{x}_t$ siges at være **kointegrerede** af orden $d$, $b$, skrives $\textbf{x}_t \sim CI(d,b)$, if
+\begin{enumerate}
+  \item alle indgange i vektoren $\textbf{x}_t$ er I(d),
+  \item en vektor $\boldsymbol{\alpha}(\neq 0)$ eksisterer sådan at $z_t = \boldsymbol{\alpha}'\textbf{x}_t \sim I(d - b), \ b > 0$,
+\end{enumerate}
+vektoren $\boldsymbol{\alpha}$ kaldes for den kointegrerende vektor.
+\vspace{2em}
+
+For $d = 1, b = 1$ får vi netop at $z_t \sim$ I(0) (stationær).
+
+# Test for kointegration
+Jeg vil nu præsentere Engle-Grangers 2-step metode til at bestemme om (for simpelthedens skyld) 2 I(1) tidsrækker kointegrerer.
+
+\begin{center}
+  \textbf{Step 1}  
+\end{center}
+\begin{enumerate}
+  \item Tjek at begge tidsrækker er I(1).
+  \item Estimer en regression med en af tidsrækker som respons og den anden som forklarende variabel
+  $$ x_{1t} = \mu + \beta_2x_{2t} + w_t, $$
+  gem resiudalerne i $\hat{w}_t$.
+  \item Test om $\hat{w}_t$ er I(1) eller I(0).
+\end{enumerate}
+
+# Hvis $\hat{w}_t$ er I(1)
+Så betyder det at de to tidsrækker **ikke** kointegrerer og man kan i så fald estimere en model der kun indeholde 1. differenser af de oprindelige tidsrækker, med andre ord en model der forklarer **kortsigts-sammenhænge**.
+
+# Hvis $\hat{w}_t$ er I(0)
+Så betyder det at de to tidsrækker **kointegrerer** og vi kan da gå til trin 2 for at estimere en **fejlkorrektionsmodel (ECM)**.
+
+\begin{center}
+  \textbf{Step 2}  
+\end{center}
+\begin{enumerate}
+  \item Brug step 1 residualerne fra forrige periode som en variabel i fejlkorrektionsmodellen:
+  $$\nabla x_{1t} = \psi_0 + \psi_1\nabla x_{1,t-1} + \underbrace{\psi_2 \nabla x_{2,t-1}}_\text{kortsigts} + \underbrace{\lambda\hat{w}_{t-1}}_\text{langsigts} + v_t,$$
+  hvor $\hat{w}_{t - 1} = x_{1,t-1} - \hat{\mu} - \hat{\beta}_2x_{2,t-1}$.
+  \item Værdien af $\lambda$ bestemmer fejlkorrektions-hastigheden, den vil altid være negativ da vi ellers vil divergere fra langsigts ligevægt.
+\end{enumerate}
