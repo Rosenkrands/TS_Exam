@@ -1,5 +1,5 @@
 ---
-title: "Emne:"
+title: "8: State Space modeller og Kalman Filteret"
 subtitle: "Tidsrækkeanalyse"
 author: Kasper Rosenkrands
 output: 
@@ -8,6 +8,14 @@ output:
       in_header: misc/style.tex
 ---
 
-# Her er et slide
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=FALSE,
+                      message=FALSE, warning=FALSE,
+                      fig.path='figs/',
+                      cache.path = '_cache/')
+library(ggplot2)
+library(dplyr)
+library(forecast)
+```
 
-- Her er et **vigtigt** punkt
+# Definition: Måleligning og tilstandsligning
