@@ -67,7 +67,7 @@ ved brug at denne notation har vi autokovariansen givet ved\footnote{ved at brug
 # Den spektrale fordelingsfunktion
 Betragter vi en periodisk proces med fast frekvens, givet ved $\omega_0$, så kan autokovariansfunktionen udtrykkes som 
 \begin{align*}
-  \gamma(h)\int_{-\frac{1}{2}}^{\frac{1}{2}}e^{2\pi i \omega h} dF(\omega),
+  \gamma(h) = \int_{-\frac{1}{2}}^{\frac{1}{2}}e^{2\pi i \omega h} dF(\omega),
 \end{align*}
 hvor den kumulative fordelingsfunktion (spektrale fordelingsfunktion) er givet ved
 \begin{align*}

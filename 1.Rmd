@@ -52,14 +52,15 @@ Autokorrelationsfunktionen (ACF) for en tidsrække, $\left\{X_t\right\}_{t\in\ma
 for alle $s,t\in \mathbb{Z}$.
 
 # PACF
-Den **partielle autokorrelations funktion (PACF)** for en stationær tidsrække, $x_t$, givet ved $\phi_{hh}$, for $h = 1, 2, \ldots$, is
-\begin{align*}
-  \phi_{11} = \corr(x_{t+1}, x_t) = \rho(1),
-\end{align*}
-and
-\begin{align*}
-  \phi_{hh} = \corr(x_{t + h} - \hat{x}_{t + h}, x_t - \hat{x}_t), \quad \text{for } h \geq 2.  
-\end{align*}
+\textbf{Den partielle autokorrelationsfunktion} (PACF) er for en stationær tidsrække $x_t$ givet ved
+     \begin{align*}
+        \phi_{hh} &= \corr(x_{t+h} - \hat{x}_{t+h}, x_t - \hat{x}_t), \quad \text{for}\quad h\geq 2.
+    \end{align*}
+    hvor $\hat{x}_{t+h}$ er defineret som regressionen af $x_{t+h}$ på $\{x_{t+h-1}, x_{t+h-2},\dots,x_{t+1}\}$.
+    \begin{align*}
+    \hat{x}_t = \beta_1 x_{t+1} + \beta_2 x_{t+2} + \dots +\beta_{h-1}x_{t+h-1}.
+    \end{align*}
+Her er den lineære afhængighed af $\{x_{t+1},\dots,x_{t+h-1}\}$ fjernet.
 
 # AR proces
 En autoregressiv proces er bestemt udfra dens foregående værdier:
@@ -237,10 +238,10 @@ For en AR(1)-model kan det vises ved:
 Vi observerer at summen vil konvergere hvis og kun hvis $|\phi| < 1$.
 
 # Kausalitet eksempel med AR(1)
-Der gælder følgende om udsagnet at $|\phi| < 1$:
+<!---Der gælder følgende om udsagnet at $|\phi| < 1$:
 \begin{align*}
     |\phi| < 1 \Longleftrightarrow \phi(z) = 0 \text{ for } |z|>1.
-\end{align*}
+\end{align*}--->
 I tilfældet hvor $|\phi| > 1$ kan man omskrive processen
 \begin{align*}
   x_t &= \phi x_t + w_t \\

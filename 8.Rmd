@@ -20,15 +20,15 @@ library(forecast)
 
 # State space modeller
 
-Tanken bag \textbf{state space modeller} er, at vi har en skjult (latent) proces $x_t$ som ikke er observerbar. (\textit{Denne antages ofte af være en markovkæde}).
+Tanken bag \textbf{state space modeller} er, at vi har en skjult (latent) proces $\textbf{x}_t$ som ikke er observerbar. (\textit{Denne antages ofte af være en markovkæde}).
 
-Grundet Markov vil der være afhængighed mellem $x$'erne.
+Grundet Markov vil der være afhængighed mellem $\textbf{x}$'erne.
 
-Vi er interesserede i at modellere $x_t$, dette er dog ikke direkte muligt.
+Vi er interesserede i at modellere $\textbf{x}_t$, dette er dog ikke direkte muligt.
 
-Man kan \textbf{inddirekte observere} $x_t$ gennem en lineær transformeret version $y_t$, hvor der er tilføjet støj.
+Man kan \textbf{inddirekte observere} $\textbf{x}_t$ gennem en lineær transformeret version $\textbf{y}_t$, hvor der er tilføjet støj.
 
-Betinget på $\{x_t\}_\mathbb{t \in Z}$ er 
+Betinget på $\{ \textbf{x}_t \}_{t \in \mathbb{Z}}$ er $\textbf{y}_t$'erne uafhængige og $\textbf{y}_t$ afhænger kun af $\textbf{x}_t$
 
 # Måleligning og tilstandsligning
 Generelt skrives en state space model ud fra to ligninger. 
@@ -43,6 +43,7 @@ Generelt skrives en state space model ud fra to ligninger.
   \underset{p\times 1}{\boldsymbol x_t} + 
   \underset{q\times 1}{\boldsymbol v_t} \tag{Måleligningen}
 \end{align*}
+Bemærk at $\boldsymbol w_t \sim \mathcal{N}_p(\boldsymbol 0,\boldsymbol Q)$ og $\boldsymbol v_t \sim \mathcal{N}_q(\boldsymbol 0,\boldsymbol R)$.
 
 # AR(1) med støj
 I en AR(1) med observationel støj har henholdsvis state-ligningen og observationsligningen formen
@@ -99,7 +100,9 @@ Til tid $t-1$ er al information indeholdt i $\textbf{x}_{t-1}^{t-1}$. Her vil $\
 
 # Opdateringsligningerne
 
-De nye forecastet værdi af $x_t$ og $P_t$ indgår i anden del af Kalman Filteret. Her opnås filtrerede værdier af $x_t$, som er de værdier af $x_t$, hvor vi har information af $y$ op til tiden $t$. De filtrerede værdier fås ved brug af \textbf{opdateringsligninger}:
+Det nye forecast af $x_t$ og $P_t$ indgår i anden del af Kalman Filteret. 
+Her opnås filtrerede værdier af $x_t$, som er de værdier af $x_t$, hvor vi har information af $y$ op til tiden $t$. 
+De filtrerede værdier fås ved brug af \textbf{opdateringsligninger}:
 \begin{align*}
   \boldsymbol x_t^t &= \boldsymbol x_t^{t-1} + K_t \varepsilon_t \\
   P_t^t &= P_t^{t-1} - K_t A_t P_t^{t-1},
