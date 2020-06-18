@@ -18,4 +18,46 @@ library(dplyr)
 library(forecast)
 ```
 
-# Definition: Måleligning og tilstandsligning
+# State space modeller
+
+Tanken bag \textbf{state space modeller} er, at vi har en skjult (latent) proces $x_t$ som ikke er observerbar. (\textit{Denne antages ofte af være en markovkæde}).
+
+Grundet Markov vil der være afhængighed mellem $x$'erne.
+
+Vi er interesserede i at modellere $x_t$, dette er dog ikke direkte muligt.
+
+Man kan \textbf{inddirekte observere} $x_t$ gennem en lineær transformeret version $y_t$, hvor der er tilføjet støj.
+
+Betinget på $\{x_t\}_\mathbb{t \in Z}$ er 
+
+# Måleligning og tilstandsligning
+Generelt skrives en state space model ud fra to ligninger. 
+\begin{align*}
+  \underset{p\times 1}{\vphantom{x_{t-1}}\boldsymbol x_t} &= 
+  \underset{p\times p}{\vphantom{x_{t-1}}\Phi} \;\; 
+  \underset{p\times 1}{\boldsymbol x_{t-1}} +  
+  \underset{p\times 1}{\vphantom{x_t}\boldsymbol w_t} \tag{Tilstandsligningen}\\[2mm]
+  %
+  \underset{q\times 1}{\boldsymbol y_t} &= 
+  \underset{q\times p}{A_t} \;\; 
+  \underset{p\times 1}{\boldsymbol x_t} + 
+  \underset{q\times 1}{\boldsymbol v_t} \tag{Måleligningen}
+\end{align*}
+
+# AR(1) med støj
+I en AR(1) med observationel støj har henholdsvis state-ligningen og observationsligningen formen
+\begin{align*}
+    &x_t=\phi x_{t-1}+w_t\\
+    & y_t =x_t+v_t,
+\end{align*}
+hvor $\{w_t\}_{t\in\mathbb{Z}}$ og $\{v_t\}_{t\in\mathbb{Z}}$ er to uafhængige hvide støje.
+Da er $\boldsymbol{\Phi}=\phi$, $\mathbf{A}_t=1$.
+
+# Filtrering, udjævning og forecast
+
+Formålet med at studere en state space model er at få estimeret den underliggende uobserverede proces  $\textbf{x}_t$ givet data $Y_s = \{ \textbf{y}_1, \ldots, \textbf{y}_s\}$ til tid $s$. 
+    \begin{itemize}
+        \item Når $t > s$ så kaldes problemet forecasting
+        \item Når $t=s$ kaldes problemet filtrering
+        \item Når $t <s$ så kaldes probelmet smoothing
+    \end{itemize}
