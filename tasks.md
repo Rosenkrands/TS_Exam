@@ -2,7 +2,8 @@
 
 ## Topic 1
 
-- Tilføj fortolkning til ACF og PACF
+- Forstå definition af PACF
+- 'Kausalitet eksempel med AR(1)' forstå første ligning
 
 ## Topic 2
 
