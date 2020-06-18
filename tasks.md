@@ -14,6 +14,8 @@
 
 ## Topic 6
 
+- Er det ikke rigtigt at de to tidsrækker ikke kointegrerer, hvis residualerne er I(1)?
+
 ## Topic 7
 
 ## Topic 8
